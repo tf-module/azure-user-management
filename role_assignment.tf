@@ -1,9 +1,10 @@
 
 resource "azurerm_role_assignment" "owner_by_user_group" {
-  count                = length(data.azuread_user.user.*)
-  scope                = element(azurerm_resource_group.user_resource_group.*.id, count.index)
+  for_each             = data.azuread_user.users
+  scope                = azurerm_resource_group.user_resource_group[each.key].id
   role_definition_name = "owner"
-  principal_id         = element(data.azuread_user.user.*.id, count.index)
+  principal_id         = each.value["id"]
+  depends_on           = [azurerm_resource_group.user_resource_group]
 }
 
 resource "azurerm_role_assignment" "role_by_shared_group" {

@@ -1,21 +1,21 @@
-data "azuread_user" "user" {
-  count               = length(var.user_emails)
-  user_principal_name = element(var.user_emails, count.index)
+data "azuread_user" "users" {
+  for_each            = toset(var.user_emails)
+  user_principal_name = each.value
 }
 
 resource "azuread_group" "user_group" {
   name    = var.team_name
-  members = data.azuread_user.user.*.object_id
+  members = values(data.azuread_user.users).*.object_id
 }
 
 resource "azurerm_resource_group" "user_resource_group" {
-  count    = length(data.azuread_user.user.*)
-  name     = replace(element(data.azuread_user.user.*.display_name, count.index), "/(\\s+)/", "-")
+  for_each = data.azuread_user.users
+  name     = replace(each.value["display_name"], "/(\\s+)/", "-")
   location = var.resource_location
 
   tags = {
-    owner       = element(data.azuread_user.user.*.display_name, count.index)
-    owner_email = element(data.azuread_user.user.*.user_principal_name, count.index)
+    owner       = each.value["display_name"]
+    owner_email = each.value["user_principal_name"]
   }
 }
 
@@ -26,8 +26,4 @@ resource "azurerm_resource_group" "shared_resource_group" {
   tags = {
     owner = "team"
   }
-}
-
-output "user_resource_group" {
-  value = azurerm_resource_group.user_resource_group
 }
