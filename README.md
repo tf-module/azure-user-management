@@ -1,4 +1,4 @@
-# Azure Resource Managed by Terraform
+# Terraform implements sharing Azure Resource with one subscription
 
 ## Usage Context
 
@@ -24,9 +24,7 @@ terraform apply -var-file="env.tfvars"
 ## Input varibles
 
 - team_name : Team's name, and will be used for user group name
-- user_emails: Users' Emails in your team, example:
-   ```terraform
-   ```
+- user_emails: Users' Emails in your team
 - resource_location：Default location of resource groups
 
 sample:
