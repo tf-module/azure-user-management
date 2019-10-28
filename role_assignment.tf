@@ -12,3 +12,15 @@ resource "azurerm_role_assignment" "role_by_shared_group" {
   role_definition_name = "contributor"
   principal_id         = azuread_group.user_group.id
 }
+
+data "azuread_user" "owners" {
+  for_each            = toset(var.subscription_owner_emails)
+  user_principal_name = each.value
+}
+
+resource "azurerm_role_assignment" "owner_of_subscription" {
+  for_each             = data.azuread_user.owners
+  scope                = data.azurerm_subscription.primary.id
+  role_definition_name = "owner"
+  principal_id         = each.value["id"]
+}

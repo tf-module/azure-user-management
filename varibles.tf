@@ -9,3 +9,8 @@ variable "user_emails" {
 variable "resource_location" {
   description = "Default location of the resource group"
 }
+
+variable "subscription_owner_emails" {
+  description = "Owner Email of the whole subscription"
+  default     = []
+}
